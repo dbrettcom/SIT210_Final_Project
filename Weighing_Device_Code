@@ -1,0 +1,38 @@
+#include "HX711ADC.h"
+
+int LOADCELL_SCK_PIN = A3;
+int LOADCELL_DOUT_PIN = A2;
+int led = D6;
+
+HX711ADC scale;
+float calibration_factor = 500; // Calibration factor adjusted according to my load cell
+float units;
+
+void setup() 
+{
+    pinMode(led, OUTPUT);
+    digitalWrite(led, LOW);
+    
+    Serial.begin(115200);
+    scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
+    scale.set_scale(calibration_factor); // Adjust to this calibration factor
+    scale.tare();  // Reset the scale to zero  
+}
+
+void loop() 
+{
+    units = scale.get_units(), 5;
+ 
+    long current_value = scale.get_value(10);
+    Particle.publish("Weight", String(units), PRIVATE);
+    delay (1000);
+    
+    if (units < 300) // Turn light on when food is below 300 grams
+        {
+            digitalWrite(led, HIGH);
+        }
+    else
+        {
+            digitalWrite(led, LOW);
+        }
+}
