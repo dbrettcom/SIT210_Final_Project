@@ -1,0 +1,89 @@
+int led = D6;
+int pirPin = D5;
+int buzzer = D4;
+int pirStat = 0;
+float units;
+
+void weighter(const char *event, const char *data)
+{
+    String pew = data;
+    units = pew.toFloat();
+}
+
+void setup()
+{
+    pinMode(buzzer, OUTPUT);
+    pinMode(pirPin, INPUT);
+    pinMode(led, OUTPUT);
+    Serial.begin(9600);
+    digitalWrite(led, LOW);
+    
+    Particle.subscribe("Weight", weighter);
+}
+
+void alert()
+{
+    tone(buzzer, 1000); 
+    delay(5000);  
+    noTone(buzzer);
+    delay(1000);
+    
+    digitalWrite(led, HIGH);
+    delay (100);
+    digitalWrite(led, LOW);
+    delay (100);
+    digitalWrite(led, HIGH);
+    delay (100);
+    digitalWrite(led, LOW);
+    delay (100);
+    digitalWrite(led, HIGH);
+    delay (100);
+    digitalWrite(led, LOW);
+    delay (100);
+    digitalWrite(led, HIGH);
+    delay (100);
+    digitalWrite(led, LOW);
+    delay (100);
+    digitalWrite(led, HIGH);
+    delay (100);
+    digitalWrite(led, LOW);
+    delay (100);
+    
+    tone(buzzer, 1000); 
+    delay(1000);  
+    noTone(buzzer);
+    delay(1000);
+}
+
+void check_weight()
+{
+    if(units > 300) 
+    {
+        // All my food is well stocked. Do not remind me to check. 
+    }
+        
+    if(units < 300)
+    {
+        
+        alert(); // One or more of my foods is low on stock. Remind me to take a shopping bag.
+
+    }
+}
+
+
+void loop()
+{
+    pirStat = digitalRead(pirPin); 
+    
+    if (pirStat == HIGH)  
+        {            
+            check_weight(); // Motion was detected. Check if I need to go shopping for anything before I leave the house.
+        }
+        
+    else 
+        {
+            // No motion was dected. Do nothing. 
+        }
+}
+
+
